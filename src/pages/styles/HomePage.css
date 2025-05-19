@@ -325,7 +325,7 @@
 
 @media (max-width: 768px) {
   .match-modal {
-    width: 90vw;
+    width: 85vw;
     max-height: 90vh;
     padding: 1.5rem 1rem;
     border-radius: 12px;
