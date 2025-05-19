@@ -5,6 +5,7 @@ import './styles/AboutPage.css';
 import dogPic from '../assets/woman-with-dog.jpg'; 
 
 const AboutPage = () => {
+
   return (
     <>
       <Header />
