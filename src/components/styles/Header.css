@@ -75,6 +75,9 @@
 
 /* ---------- Mobile Styles ---------- */
 @media (max-width: 768px) {
+  .logo {
+    height: 35px;
+  }
   .nav-toggle {
     display: flex;
   }

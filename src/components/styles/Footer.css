@@ -54,3 +54,17 @@
       margin-left: -15%;
     }
   }
+
+  /* ---------- Mobile Styles ---------- */
+@media (max-width: 768px) {
+  .footer-logo{
+  height: 35px;
+  }
+}
+
+  @media (min-width: 405px) and (max-width: 768px) {
+    .footer-right{
+      margin-left: 75%;
+      margin-top: 2%;
+    }
+  }
