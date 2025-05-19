@@ -44,7 +44,7 @@ To run the project locally, follow these steps:
 
 ### 1. Clone the Repository  
 git clone https://github.com/AyushDubey-maker/fetchMate.git  
-cd fetchMate
+
 
 ### 2. Install Dependencies  
 Make sure you have **Node.js** and **npm** installed.  
