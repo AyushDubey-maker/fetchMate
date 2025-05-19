@@ -1,27 +1,3 @@
-// import React, { createContext, useContext, useState } from 'react';
-
-// const AuthContext = createContext();
-
-// export const useAuth = () => useContext(AuthContext);
-
-// export const AuthProvider = ({ children }) => {
-//   const [isLoggedIn, setIsLoggedIn] = useState(false);
-
-//   const login = () => setIsLoggedIn(true);
-//   const logout = () => {
-//     setIsLoggedIn(false);
-//     fetch('https://frontend-take-home-service.fetch.com/auth/logout', {
-//       method: 'POST',
-//       credentials: 'include'
-//     });
-//   };
-
-//   return (
-//     <AuthContext.Provider value={{ isLoggedIn, login, logout }}>
-//       {children}
-//     </AuthContext.Provider>
-//   );
-// };
 import React, { createContext, useContext, useState, useEffect } from 'react';
 
 const AuthContext = createContext();

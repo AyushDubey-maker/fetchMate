@@ -44,6 +44,10 @@
     opacity: 0.8;
   }
   
+  .a_footer_icon{
+    color: inherit;
+    text-decoration: none;
+  }
 
   @media (min-width: 768px) {
     .credit{
