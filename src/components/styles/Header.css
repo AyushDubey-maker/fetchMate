@@ -5,6 +5,7 @@
   position: sticky;
   top: 0;
   z-index: 1000;
+  font-family: math;
 }
 
 .header-container {
@@ -44,6 +45,7 @@
   border-radius: 4px;
   cursor: pointer;
   transition: background-color 0.2s ease-in-out;
+  font-family: math;
 }
 
 .logout-button:hover {

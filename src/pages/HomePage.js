@@ -4,8 +4,7 @@ import './styles/HomePage.css';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
 import Banner from '../components/Banner';
-// import bannerImg from '../assets/banner_image.png';
-// import bannerImg_mobile from '../assets/banner_image_mobile.png';
+
 
 const BASE_URL = 'https://frontend-take-home-service.fetch.com';
 const PAGE_SIZE = 24;
@@ -21,7 +20,7 @@ const HomePage = () => {
   const [sortOrder, setSortOrder] = useState('asc');
   const [from, setFrom] = useState(0);
   const [total, setTotal] = useState(0);
-  // const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
+
   const [isLoading, setIsLoading] = useState(false);
   const [matchedDog, setMatchedDog] = useState(null);
 
@@ -146,21 +145,43 @@ const HomePage = () => {
     );
   };
 
-  const handleMatch = async () => {
-    const res = await fetch(`${BASE_URL}/dogs/match`, {
+const handleMatch = async () => {
+  const res = await fetch(`${BASE_URL}/dogs/match`, {
+    method: 'POST',
+    credentials: 'include',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(favorites),
+  });
+
+  const data = await res.json();
+
+  // Always fetch matched dog info
+  const matchedRes = await fetch(`${BASE_URL}/dogs`, {
+    method: 'POST',
+    credentials: 'include',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify([data.match]),
+  });
+
+  const matchedData = await matchedRes.json();
+  const matchedDogObj = matchedData[0] || { id: data.match, name: 'Unknown', breed: 'Unknown' };
+
+  // Fetch location info
+  if (matchedDogObj && matchedDogObj.zip_code) {
+    const locationRes = await fetch(`${BASE_URL}/locations`, {
       method: 'POST',
       credentials: 'include',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(favorites),
+      body: JSON.stringify([matchedDogObj.zip_code]),
     });
-    const data = await res.json();
-    const matched = dogDetails.find((d) => d.id === data.match);
-    if (matched) {
-      setMatchedDog(matched);
-    } else {
-      setMatchedDog({ id: data.match, name: 'Unknown', breed: 'Unknown' });
-    }
-  };
+
+    const [location] = await locationRes.json();
+    matchedDogObj.location = location || null;
+  }
+
+  setMatchedDog(matchedDogObj);
+};
+
 
   const totalPages = Math.ceil(total / PAGE_SIZE);
   const currentPage = Math.floor(from / PAGE_SIZE) + 1;
@@ -169,28 +190,19 @@ const HomePage = () => {
     setFrom((pageNum - 1) * PAGE_SIZE);
   };
 
-  // useEffect(() => {
-  //   const handleResize = () => setIsMobile(window.innerWidth <= 768);
-  //   window.addEventListener('resize', handleResize);
-  //   return () => window.removeEventListener('resize', handleResize);
-  // }, []);
+
 
   return (
     <>
       <Header />
-      {/* <div className="banner">
-        <img
-          src={isMobile ? bannerImg_mobile : bannerImg}
-          alt="Banner with dogs"
-          className="banner-img"
-        />
-      </div> */}
+
       <Banner/>
 
       <div className="home-wrapper">
         <div className="controls">
           <select
             value={selectedGroup}
+            title="Filter breeds alphabetically (e.g. A–F)"
             onChange={(e) => {
               setSelectedGroup(e.target.value);
               setSelectedBreeds([]);
@@ -207,6 +219,7 @@ const HomePage = () => {
 
           <select
             value={selectedBreeds[0] || ''}
+            title="Select a specific dog breed to filter results"
             onChange={(e) => {
               const value = e.target.value;
               if (value === '') {
@@ -256,7 +269,14 @@ const HomePage = () => {
                 <img src={dog.img} alt={dog.name} />
                 <h3>{dog.name}</h3>
                 <p><strong>Breed:</strong> {dog.breed}</p>
-                <p><strong>Age:</strong> {dog.age}</p>
+                <p>
+                  <strong>Age:</strong>{' '}
+                  {dog.age === 0
+                    ? 'Less than 1 year old'
+                    : dog.age === 1
+                    ? '1 year old'
+                    : `${dog.age} years old`}
+                </p>
                 {dog.location ? (
                   <p className="dog-location">
                     <strong>Location:</strong> {dog.location.city}, {dog.location.state} ({dog.location.county} County)
@@ -270,7 +290,7 @@ const HomePage = () => {
                   onClick={() => toggleFavorite(dog.id)}
                   className={favorites.includes(dog.id) ? 'favorited' : ''}
                 >
-                  {favorites.includes(dog.id) ? '💖 Favorited' : '🤍 Favorite'}
+                  {favorites.includes(dog.id) ? '❤️ Favorited' : '🤍 Favorite'}
                 </button>
               </div>
             ))
@@ -313,7 +333,14 @@ const HomePage = () => {
             <img src={matchedDog.img} alt={matchedDog.name} className="match-image" />
             <h3>{matchedDog.name}</h3>
             <p><strong>Breed:</strong> {matchedDog.breed}</p>
-            <p><strong>Age:</strong> {matchedDog.age}</p>
+            <p>
+                  <strong>Age:</strong>{' '}
+                  {matchedDog.age === 0
+                    ? 'Less than 1 year old'
+                    : matchedDog.age === 1
+                    ? '1 year old'
+                    : `${matchedDog.age} years old`}
+                </p>
             {matchedDog.location && (
               <p><strong>Location:</strong> {matchedDog.location.city}, {matchedDog.location.state}</p>
             )}
