@@ -5,7 +5,6 @@ import Header from '../components/Header';
 import Footer from '../components/Footer';
 import Banner from '../components/Banner';
 
-
 const BASE_URL = 'https://frontend-take-home-service.fetch.com';
 const PAGE_SIZE = 24;
 
@@ -20,6 +19,8 @@ const HomePage = () => {
   const [sortOrder, setSortOrder] = useState('asc');
   const [from, setFrom] = useState(0);
   const [total, setTotal] = useState(0);
+  const [zipCodesNearMe, setZipCodesNearMe] = useState([]);
+  const [isNearMeActive, setIsNearMeActive] = useState(false);
 
   const [isLoading, setIsLoading] = useState(false);
   const [matchedDog, setMatchedDog] = useState(null);
@@ -69,6 +70,10 @@ const HomePage = () => {
       breedGroups[selectedGroup].forEach((breed) => query.append('breeds', breed));
     }
 
+    if (zipCodesNearMe.length > 0) {
+      zipCodesNearMe.forEach(zip => query.append('zipCodes', zip));
+    }
+
     query.append('size', PAGE_SIZE);
     query.append('from', from);
     query.append('sort', `breed:${sortOrder}`);
@@ -82,17 +87,17 @@ const HomePage = () => {
       .then((data) => {
         setDogIds(data.resultIds);
         setTotal(data.total);
+        setIsLoading(false);
       })
       .catch((err) => {
         console.error("Error fetching dog IDs:", err);
         setIsLoading(false);
       });
-  }, [selectedBreeds, selectedGroup, sortOrder, from, breedGroups]);
+  }, [selectedBreeds, selectedGroup, sortOrder, from, breedGroups, zipCodesNearMe]);
 
   useEffect(() => {
     if (dogIds.length === 0) {
       setDogDetails([]);
-      setIsLoading(false);
       return;
     }
 
@@ -139,64 +144,102 @@ const HomePage = () => {
       });
   }, [dogIds]);
 
+  const handleFindNearMe = () => {
+      // If already active, clicking again should turn it off
+      if (isNearMeActive) {
+        setZipCodesNearMe([]);
+        setIsNearMeActive(false);
+        return;
+      }
+
+      if (!navigator.geolocation) {
+        alert('Geolocation is not supported by your browser');
+        return;
+      }
+    navigator.geolocation.getCurrentPosition(async (position) => {
+      const { latitude, longitude } = position.coords;
+
+      const nearbyZipRes = await fetch(`${BASE_URL}/locations/search`, {
+        method: 'POST',
+        credentials: 'include',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          geoBoundingBox: {
+            bottom_left: { lat: latitude - 0.3, lon: longitude - 0.3 },
+            top_right: { lat: latitude + 0.3, lon: longitude + 0.3 },
+          },
+          size: 100,
+        }),
+      });
+
+      const zipData = await nearbyZipRes.json();
+      const zipCodes = zipData.results.map(loc => loc.zip_code);
+
+      if (zipCodes.length === 0) {
+        alert('No dogs found near your location. Try expanding your search.');
+        return;
+      }
+
+      setZipCodesNearMe(zipCodes);
+      setIsNearMeActive(true);
+      setFrom(0);
+    }, () => {
+      alert('Unable to retrieve your location. Please allow location access.');
+    });
+  };
+
+  const handleMatch = async () => {
+    const res = await fetch(`${BASE_URL}/dogs/match`, {
+      method: 'POST',
+      credentials: 'include',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(favorites),
+    });
+
+    const data = await res.json();
+
+    const matchedRes = await fetch(`${BASE_URL}/dogs`, {
+      method: 'POST',
+      credentials: 'include',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify([data.match]),
+    });
+
+    const matchedData = await matchedRes.json();
+    const matchedDogObj = matchedData[0] || { id: data.match, name: 'Unknown', breed: 'Unknown' };
+
+    if (matchedDogObj && matchedDogObj.zip_code) {
+      const locationRes = await fetch(`${BASE_URL}/locations`, {
+        method: 'POST',
+        credentials: 'include',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify([matchedDogObj.zip_code]),
+      });
+
+      const [location] = await locationRes.json();
+      matchedDogObj.location = location || null;
+    }
+
+    setMatchedDog(matchedDogObj);
+  };
+
   const toggleFavorite = (id) => {
     setFavorites((prev) =>
       prev.includes(id) ? prev.filter((i) => i !== id) : [...prev, id]
     );
   };
 
-const handleMatch = async () => {
-  const res = await fetch(`${BASE_URL}/dogs/match`, {
-    method: 'POST',
-    credentials: 'include',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(favorites),
-  });
-
-  const data = await res.json();
-
-  // Always fetch matched dog info
-  const matchedRes = await fetch(`${BASE_URL}/dogs`, {
-    method: 'POST',
-    credentials: 'include',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify([data.match]),
-  });
-
-  const matchedData = await matchedRes.json();
-  const matchedDogObj = matchedData[0] || { id: data.match, name: 'Unknown', breed: 'Unknown' };
-
-  // Fetch location info
-  if (matchedDogObj && matchedDogObj.zip_code) {
-    const locationRes = await fetch(`${BASE_URL}/locations`, {
-      method: 'POST',
-      credentials: 'include',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify([matchedDogObj.zip_code]),
-    });
-
-    const [location] = await locationRes.json();
-    matchedDogObj.location = location || null;
-  }
-
-  setMatchedDog(matchedDogObj);
-};
-
-
-  const totalPages = Math.ceil(total / PAGE_SIZE);
-  const currentPage = Math.floor(from / PAGE_SIZE) + 1;
-
   const handlePageChange = (pageNum) => {
     setFrom((pageNum - 1) * PAGE_SIZE);
   };
 
-
+  const totalPages = Math.ceil(total / PAGE_SIZE);
+  const currentPage = Math.floor(from / PAGE_SIZE) + 1;
 
   return (
     <>
       <Header />
-
-      <Banner/>
+      <Banner />
 
       <div className="home-wrapper">
         <div className="controls">
@@ -249,15 +292,27 @@ const handleMatch = async () => {
           </select>
 
           <button
+            className={`near-me-button ${isNearMeActive ? 'active' : ''}`}
+            onClick={handleFindNearMe}
+            title="Find dogs close to your current location"
+          >
+            📍Dogs Near Me 
+          </button>
+
+          <button
             onClick={() => {
               setSelectedGroup('');
               setSelectedBreeds([]);
               setSortOrder('asc');
+              setZipCodesNearMe([]);
+              setIsNearMeActive(false);
               setFrom(0);
             }}
           >
             Reset Filters
           </button>
+
+          
         </div>
 
         <div className="dog-grid">
@@ -323,6 +378,7 @@ const handleMatch = async () => {
           </button>
         )}
       </div>
+
       <Footer />
 
       {matchedDog && (
@@ -334,13 +390,13 @@ const handleMatch = async () => {
             <h3>{matchedDog.name}</h3>
             <p><strong>Breed:</strong> {matchedDog.breed}</p>
             <p>
-                  <strong>Age:</strong>{' '}
-                  {matchedDog.age === 0
-                    ? 'Less than 1 year old'
-                    : matchedDog.age === 1
-                    ? '1 year old'
-                    : `${matchedDog.age} years old`}
-                </p>
+              <strong>Age:</strong>{' '}
+              {matchedDog.age === 0
+                ? 'Less than 1 year old'
+                : matchedDog.age === 1
+                ? '1 year old'
+                : `${matchedDog.age} years old`}
+            </p>
             {matchedDog.location && (
               <p><strong>Location:</strong> {matchedDog.location.city}, {matchedDog.location.state}</p>
             )}
