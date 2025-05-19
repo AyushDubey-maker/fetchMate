@@ -1,70 +1,100 @@
-# Getting Started with Create React App
+<p align="center">
+  <img src="public/fetchmate-icon.png" alt="FetchMate Logo" width="64" height="64"/>
+</p>
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+<h1 align="center">FetchMate – Adopt Your New Best Friend!</h1>
 
-## Available Scripts
+Welcome to **FetchMate**, a responsive React-based web application that helps users find their perfect shelter dog match. This project was built as part of the Fetch Take-Home assessment, featuring a user-friendly interface, location-based filtering, and favorites-based matchmaking.
 
-In the project directory, you can run:
+---
 
-### `npm start`
+## Features
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+- ✅ **Login authentication** using Fetch-provided API
+- 🐶 Browse adoptable dogs with:
+  - 🔎 Filter by **Breed** and **Alphabet Group (A–Z)**
+  - 📍 Filter by **Dogs Near Me** using geolocation and zip codes
+  - ↕️ **Sort breeds alphabetically (A–Z / Z–A)**
+- ❤️ Add to **Favorites** and generate a perfect **Match**
+-  Responsive layout for desktop & mobile
+-  Polished and accessible UI with themed styles
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+---
 
-### `npm test`
+## 🔗 Live Demo
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+👉 [View Live on Vercel](https://fetch-mate-ten.vercel.app/)  
+_(Deployed with auto-updates from GitHub)_
 
-### `npm run build`
+---
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+## 🛠 Tech Stack
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+- **React.js** (CRA)
+- **React Router v6**
+- **Fetch API** with credentials
+- **CSS modules** and media queries
+- **Deployed on Vercel**
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+---
 
-### `npm run eject`
+## 🚀 Getting Started (Local Setup)
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+To run the project locally, follow these steps:
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+### 1. Clone the Repository  
+git clone https://github.com/AyushDubey-maker/fetchMate.git  
+cd fetchMate
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+### 2. Install Dependencies  
+Make sure you have **Node.js** and **npm** installed.  
+npm install
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+### 3. Start the Development Server  
+npm start  
 
-## Learn More
+This will run the app locally at:  
+http://localhost:3000
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+---
+## 📁 Project Structure
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+fetchMate/  
+├── public/  
+├── src/  
+│   ├── components/  
+│   ├── pages/  
+│   ├── context/  
+│   ├── styles/  
+│   └── App.js / index.js  
+├── .gitignore  
+├── README.md  
+└── package.json
 
-### Code Splitting
+---
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
+## 🌐 API Reference
 
-### Analyzing the Bundle Size
+Base URL: `https://frontend-take-home-service.fetch.com`
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
+Endpoints used:
+- POST `/auth/login`
+- GET `/dogs/breeds`
+- GET `/dogs/search`
+- POST `/dogs`
+- POST `/dogs/match`
+- POST `/locations`
+- POST `/locations/search`
 
-### Making a Progressive Web App
+> All requests use `credentials: 'include'` for authentication cookies.
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
+---
 
-### Advanced Configuration
+## 👤 Author
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
+**Ayush Dubey**  
+GitHub: https://github.com/AyushDubey-maker  
+LinkedIn: https://linkedin.com/in/ayush-dubey-b0b9b61b6
 
-### Deployment
+---
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
