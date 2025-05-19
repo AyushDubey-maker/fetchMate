@@ -1,38 +1,42 @@
 .header {
-    background-color: #ffffff;
-    border-bottom: 1px solid #eee;
-    padding: 10px 0;
-    position: sticky;
-    top: 0;
-    z-index: 1000;
-  }
-  
-  .header-container {
-    display: flex;
-    align-items: center;
-    max-width: 1100px;
-    margin: 0 auto;
-    padding: 0 20px;
-    justify-content: space-between;
-  }
-  
-  .logo {
-    height: 55px;
-  }
-  
-  .nav-link {
-    margin-left: 20px;
-    text-decoration: none;
-    color: rgb(48, 13, 56);
-    font-weight: 600;
-    font-size: 16px;
-  }
-  
+  background-color: #ffffff;
+  border-bottom: 1px solid #eee;
+  padding: 10px 0;
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+}
+
+.header-container {
+  display: flex;
+  align-items: center;
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 0 20px;
+  justify-content: space-between;
+}
+
+.logo {
+  height: 55px;
+}
+
+/* Nav Menu - Desktop */
+.nav-menu {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.nav-link {
+  text-decoration: none;
+  color: rgb(48, 13, 56);
+  font-weight: 600;
+  font-size: 16px;
+}
 
 .logout-button {
-  margin-left: 20px;
   padding: 6px 14px;
-  background-color: #d32f2f; /* red */
+  background-color: #d32f2f;
   border: none;
   color: #ffffff;
   font-weight: 600;
@@ -43,5 +47,60 @@
 }
 
 .logout-button:hover {
-  background-color: #b71c1c; /* darker red on hover */
+  background-color: #b71c1c;
+}
+
+/* Hamburger Icon - Hidden on Desktop */
+.nav-toggle {
+  display: none;
+  flex-direction: column;
+  cursor: pointer;
+  gap: 5px;
+}
+
+.nav-toggle .bar {
+  width: 25px;
+  height: 3px;
+  background-color: rgb(48, 13, 56);
+  border-radius: 2px;
+}
+
+.nav-link.active {
+  border-bottom: 2px solid rgb(48, 13, 56);
+  padding-bottom: 4px;
+  color: rgb(48, 13, 56);
+}
+
+/* ---------- Mobile Styles ---------- */
+@media (max-width: 768px) {
+  .nav-toggle {
+    display: flex;
+  }
+
+  .nav-menu {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    flex-direction: column;
+    background-color: #fff;
+    display: none;
+    text-align: center;
+    padding: 20px 0;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  }
+
+  .nav-menu.open {
+    display: flex;
+  }
+
+  .nav-link {
+    margin: 10px 0;
+    font-size: 18px;
+  }
+
+  .logout-button {
+    margin: 10px 0;
+    font-size: 18px;
+  }
 }

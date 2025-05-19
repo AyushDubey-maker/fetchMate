@@ -1,5 +1,5 @@
-import React from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import React, { useState } from 'react';
+import { NavLink, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import './styles/Header.css';
 import logo from '../assets/fetchmate-logo.png';
@@ -7,27 +7,78 @@ import logo from '../assets/fetchmate-logo.png';
 const Header = () => {
   const { isLoggedIn, logout } = useAuth();
   const navigate = useNavigate();
+  const [menuOpen, setMenuOpen] = useState(false);
 
   const handleLogout = () => {
     logout();
     navigate('/');
+    setMenuOpen(false);
   };
+
+  const closeMenu = () => setMenuOpen(false);
 
   return (
     <header className="header">
       <div className="header-container">
         <img src={logo} alt="FetchMate Logo" className="logo" />
-        <nav>
+
+        <div
+          className={`nav-toggle ${menuOpen ? 'open' : ''}`}
+          onClick={() => setMenuOpen(!menuOpen)}
+        >
+          <span className="bar" />
+          <span className="bar" />
+          <span className="bar" />
+        </div>
+
+        <nav className={`nav-menu ${menuOpen ? 'open' : ''}`}>
           {isLoggedIn ? (
             <>
-              <Link to="/" className="nav-link">Home</Link>
-              <Link to="/about" className="nav-link">About</Link>
-              <button onClick={handleLogout} className="logout-button">Logout</button>
+              <NavLink
+                to="/"
+                className={({ isActive }) =>
+                  `nav-link${isActive ? ' active' : ''}`
+                }
+                onClick={closeMenu}
+              >
+                Home
+              </NavLink>
+
+              <NavLink
+                to="/about"
+                className={({ isActive }) =>
+                  `nav-link${isActive ? ' active' : ''}`
+                }
+                onClick={closeMenu}
+              >
+                About
+              </NavLink>
+
+              <button onClick={handleLogout} className="logout-button">
+                Logout
+              </button>
             </>
           ) : (
             <>
-              <Link to="/login" className="nav-link">Login</Link>
-              <Link to="/about" className="nav-link">About</Link>
+              <NavLink
+                to="/login"
+                className={({ isActive }) =>
+                  `nav-link${isActive ? ' active' : ''}`
+                }
+                onClick={closeMenu}
+              >
+                Login
+              </NavLink>
+
+              <NavLink
+                to="/about"
+                className={({ isActive }) =>
+                  `nav-link${isActive ? ' active' : ''}`
+                }
+                onClick={closeMenu}
+              >
+                About
+              </NavLink>
             </>
           )}
         </nav>

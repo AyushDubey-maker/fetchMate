@@ -3,12 +3,14 @@ import Header from '../components/Header';
 import Footer from '../components/Footer';
 import './styles/AboutPage.css';
 import dogPic from '../assets/woman-with-dog.jpg'; 
+import Banner from '../components/Banner';
 
 const AboutPage = () => {
 
   return (
     <>
       <Header />
+      <Banner/>
       <div className="about-container">
         <img src={dogPic} alt="Cute dog" className="about-image" />
         <div className="about-text">

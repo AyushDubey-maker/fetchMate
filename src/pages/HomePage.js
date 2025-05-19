@@ -3,8 +3,9 @@ import { useLocation } from 'react-router-dom';
 import './styles/HomePage.css';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
-import bannerImg from '../assets/banner_image.png';
-import bannerImg_mobile from '../assets/banner_image_mobile.png';
+import Banner from '../components/Banner';
+// import bannerImg from '../assets/banner_image.png';
+// import bannerImg_mobile from '../assets/banner_image_mobile.png';
 
 const BASE_URL = 'https://frontend-take-home-service.fetch.com';
 const PAGE_SIZE = 24;
@@ -20,7 +21,7 @@ const HomePage = () => {
   const [sortOrder, setSortOrder] = useState('asc');
   const [from, setFrom] = useState(0);
   const [total, setTotal] = useState(0);
-  const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
+  // const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
   const [isLoading, setIsLoading] = useState(false);
   const [matchedDog, setMatchedDog] = useState(null);
 
@@ -168,25 +169,23 @@ const HomePage = () => {
     setFrom((pageNum - 1) * PAGE_SIZE);
   };
 
-  useEffect(() => {
-    const handleResize = () => setIsMobile(window.innerWidth <= 768);
-    window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
-  }, []);
+  // useEffect(() => {
+  //   const handleResize = () => setIsMobile(window.innerWidth <= 768);
+  //   window.addEventListener('resize', handleResize);
+  //   return () => window.removeEventListener('resize', handleResize);
+  // }, []);
 
   return (
     <>
       <Header />
-      <div className="banner">
+      {/* <div className="banner">
         <img
           src={isMobile ? bannerImg_mobile : bannerImg}
           alt="Banner with dogs"
           className="banner-img"
         />
-        <div className="banner-text">
-          Home is Where<br /> the Paw Prints Are
-        </div>
-      </div>
+      </div> */}
+      <Banner/>
 
       <div className="home-wrapper">
         <div className="controls">
