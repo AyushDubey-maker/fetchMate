@@ -2,7 +2,7 @@
   <img src="public/fetchmate-icon.png" alt="FetchMate Logo" width="64" height="64"/>
 </p>
 
-<h1 align="center">FetchMate – Adopt Your New Best Friend!</h1>
+<h1 align="center">FetchMate – Home is Where the Paw Prints Are!</h1>
 
 Welcome to **FetchMate**, a responsive React-based web application that helps users find their perfect shelter dog match. This project was built as part of the Fetch Take-Home assessment, featuring a user-friendly interface, location-based filtering, and favorites-based matchmaking.
 
