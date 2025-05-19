@@ -225,7 +225,7 @@
 }
 
 .near-me-button {
-  padding: 10px 16px;
+  padding: 8px 16px !important;
   background-color: #6a1b9a; /* default purple */
   color: white;
   border: none;
@@ -239,7 +239,13 @@
   background-color: #4a0072; /* darker variant when active */
 }
 
-
+.no-dogs-message {
+  text-align: center;
+  font-size: 1.2rem;
+  padding: 2rem;
+  color: #555;
+  font-family: math;
+}
 
 /* Modal overlay covers full screen */
 .modal-overlay {

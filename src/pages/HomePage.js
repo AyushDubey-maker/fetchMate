@@ -87,7 +87,7 @@ const HomePage = () => {
       .then((data) => {
         setDogIds(data.resultIds);
         setTotal(data.total);
-        setIsLoading(false);
+        // setIsLoading(false);
       })
       .catch((err) => {
         console.error("Error fetching dog IDs:", err);
@@ -98,6 +98,7 @@ const HomePage = () => {
   useEffect(() => {
     if (dogIds.length === 0) {
       setDogDetails([]);
+      setIsLoading(false);
       return;
     }
 
@@ -318,6 +319,10 @@ const HomePage = () => {
         <div className="dog-grid">
           {isLoading ? (
             <div className="loading-dog-grid">Loading dogs... 🐾</div>
+          ) : dogDetails.length === 0 ? (
+            <div className="no-dogs-message">
+              😕 No dogs found. Try changing your filters or location!
+            </div>
           ) : (
             dogDetails.map((dog) => (
               <div key={dog.id} className="dog-card">
