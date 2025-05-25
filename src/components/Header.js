@@ -16,6 +16,7 @@ const Header = ({ favoriteCount = 0 }) => {
       localStorage.removeItem('userEmail');
     }
     logout();
+    sessionStorage.removeItem('dogFactShown');
     navigate('/');
     setMenuOpen(false);
   };

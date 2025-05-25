@@ -4,6 +4,7 @@ import './styles/HomePage.css';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
 import Banner from '../components/Banner';
+import DogFactModal from '../components/DogFactModal';
 
 const BASE_URL = 'https://frontend-take-home-service.fetch.com';
 const PAGE_SIZE = 24;
@@ -27,6 +28,8 @@ const HomePage = () => {
 
   const [isLoading, setIsLoading] = useState(false);
   const [matchedDog, setMatchedDog] = useState(null);
+  const [showFactModal, setShowFactModal] = useState(false);
+
 
   const location = useLocation();
 
@@ -106,6 +109,19 @@ const HomePage = () => {
         if (storedFavs) {
           setFavorites(JSON.parse(storedFavs));
         }
+      }
+    }, []);
+
+    // Fact for the day
+
+    useEffect(() => {
+      const shown = sessionStorage.getItem('dogFactShown');
+      if (!shown) {
+        setShowFactModal(true);
+        sessionStorage.setItem('dogFactShown', 'true');
+
+        // Auto close after 15s
+        setTimeout(() => setShowFactModal(false), 15000);
       }
     }, []);
 
@@ -261,9 +277,11 @@ const HomePage = () => {
 
   return (
     <>
+      <DogFactModal show={showFactModal} onClose={() => setShowFactModal(false)} />
+
       <Header favoriteCount={favorites.length} />
 
-      <Banner />
+      <Banner/>
 
       <div className="home-wrapper">
         <div className="controls">

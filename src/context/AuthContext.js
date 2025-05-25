@@ -12,6 +12,7 @@ export const AuthProvider = ({ children }) => {
   const logout = () => {
     setIsLoggedIn(false);
     const user = localStorage.getItem('userEmail');
+    sessionStorage.removeItem('dogFactShown');
     if (user) {
       localStorage.removeItem(`favorites_${user}`);
       localStorage.removeItem('userEmail');
