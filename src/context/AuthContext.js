@@ -11,6 +11,11 @@ export const AuthProvider = ({ children }) => {
 
   const logout = () => {
     setIsLoggedIn(false);
+    const user = localStorage.getItem('userEmail');
+    if (user) {
+      localStorage.removeItem(`favorites_${user}`);
+      localStorage.removeItem('userEmail');
+    }
     fetch('https://frontend-take-home-service.fetch.com/auth/logout', {
       method: 'POST',
       credentials: 'include'

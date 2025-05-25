@@ -73,6 +73,15 @@
   color: rgb(48, 13, 56);
 }
 
+.badge {
+  background-color: rgb(48, 13, 56);
+  color: white;
+  padding: 2px 8px;
+  border-radius: 12px;
+  font-size: 12px;
+  margin-left: 6px;
+  font-weight: 600;
+}
 /* ---------- Mobile Styles ---------- */
 @media (max-width: 768px) {
   .logo {

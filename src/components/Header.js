@@ -4,12 +4,17 @@ import { useAuth } from '../context/AuthContext';
 import './styles/Header.css';
 import logo from '../assets/fetchmate-logo.png';
 
-const Header = () => {
+const Header = ({ favoriteCount = 0 }) => {
   const { isLoggedIn, logout } = useAuth();
   const navigate = useNavigate();
   const [menuOpen, setMenuOpen] = useState(false);
 
   const handleLogout = () => {
+    const user = localStorage.getItem('userEmail');
+    if (user) {
+      localStorage.removeItem(`favorites_${user}`);
+      localStorage.removeItem('userEmail');
+    }
     logout();
     navigate('/');
     setMenuOpen(false);
@@ -42,6 +47,19 @@ const Header = () => {
                 onClick={closeMenu}
               >
                 Home
+              </NavLink>
+
+              <NavLink
+                to="/my-favorites"
+                className={({ isActive }) =>
+                  `nav-link${isActive ? ' active' : ''}`
+                }
+                onClick={closeMenu}
+              >
+                My Favorites
+                {favoriteCount > 0 && (
+                  <span className="badge">{favoriteCount}</span>
+                )}
               </NavLink>
 
               <NavLink

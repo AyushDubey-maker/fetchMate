@@ -24,6 +24,7 @@ const LoginPage = () => {
 
     if (res.ok) {
       login(); 
+      localStorage.setItem('userEmail', email);
       navigate('/');
     } else {
       alert('Login failed. Please check your name and email.');

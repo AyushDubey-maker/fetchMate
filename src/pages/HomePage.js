@@ -15,7 +15,10 @@ const HomePage = () => {
   const [selectedBreeds, setSelectedBreeds] = useState([]);
   const [dogIds, setDogIds] = useState([]);
   const [dogDetails, setDogDetails] = useState([]);
-  const [favorites, setFavorites] = useState([]);
+  const [favorites, setFavorites] = useState(() => {
+  const stored = localStorage.getItem('favorites');
+  return stored ? JSON.parse(stored) : [];
+});
   const [sortOrder, setSortOrder] = useState('asc');
   const [from, setFrom] = useState(0);
   const [total, setTotal] = useState(0);
@@ -94,6 +97,24 @@ const HomePage = () => {
         setIsLoading(false);
       });
   }, [selectedBreeds, selectedGroup, sortOrder, from, breedGroups, zipCodesNearMe]);
+
+  // Favorites
+    useEffect(() => {
+      const storedUser = localStorage.getItem('userEmail');
+      if (storedUser) {
+        const storedFavs = localStorage.getItem(`favorites_${storedUser}`);
+        if (storedFavs) {
+          setFavorites(JSON.parse(storedFavs));
+        }
+      }
+    }, []);
+
+    useEffect(() => {
+      const storedUser = localStorage.getItem('userEmail');
+      if (storedUser) {
+        localStorage.setItem(`favorites_${storedUser}`, JSON.stringify(favorites));
+      }
+    }, [favorites]);
 
   useEffect(() => {
     if (dogIds.length === 0) {
@@ -225,10 +246,11 @@ const HomePage = () => {
   };
 
   const toggleFavorite = (id) => {
-    setFavorites((prev) =>
-      prev.includes(id) ? prev.filter((i) => i !== id) : [...prev, id]
-    );
-  };
+  setFavorites((prev) =>
+    prev.includes(id) ? prev.filter((i) => i !== id) : [...prev, id]
+  );
+};
+
 
   const handlePageChange = (pageNum) => {
     setFrom((pageNum - 1) * PAGE_SIZE);
@@ -239,7 +261,8 @@ const HomePage = () => {
 
   return (
     <>
-      <Header />
+      <Header favoriteCount={favorites.length} />
+
       <Banner />
 
       <div className="home-wrapper">
