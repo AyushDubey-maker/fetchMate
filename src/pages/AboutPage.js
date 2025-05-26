@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
 import './styles/AboutPage.css';
@@ -6,10 +6,25 @@ import dogPic from '../assets/woman-with-dog.jpg';
 import Banner from '../components/Banner';
 
 const AboutPage = () => {
+    const [favorites, setFavorites] = useState(() => {
+    const stored = localStorage.getItem('favorites');
+    return stored ? JSON.parse(stored) : [];
+  });
+    // Favorites
+      useEffect(() => {
+        const storedUser = localStorage.getItem('userEmail');
+        if (storedUser) {
+          const storedFavs = localStorage.getItem(`favorites_${storedUser}`);
+          if (storedFavs) {
+            setFavorites(JSON.parse(storedFavs));
+          }
+        }
+      }, []);
+  
 
   return (
     <>
-      <Header />
+      <Header favoriteCount={favorites.length}/>
       <Banner/>
       <div className="about-container">
         <img src={dogPic} alt="Cute dog" className="about-image" />

@@ -167,7 +167,7 @@ const MyFavorites = () => {
         <div className="modal-overlay">
           <div className="match-modal">
             <button className="close-button" onClick={() => setMatchedDog(null)}>✖</button>
-            <h2>You matched with:</h2>
+            <h2>🎉 You matched with:</h2>
             <img src={matchedDog.img} alt={matchedDog.name} className="match-image" />
             <h3>{matchedDog.name}</h3>
             <p><strong>Breed:</strong> {matchedDog.breed}</p>

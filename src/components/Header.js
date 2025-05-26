@@ -50,18 +50,21 @@ const Header = ({ favoriteCount = 0 }) => {
                 Home
               </NavLink>
 
+
               <NavLink
-                to="/my-favorites"
-                className={({ isActive }) =>
-                  `nav-link${isActive ? ' active' : ''}`
-                }
-                onClick={closeMenu}
-              >
+              to="/my-favorites"
+              className={({ isActive }) =>
+                `nav-link favorites-link${isActive ? ' active' : ''}`
+              }
+              onClick={closeMenu}
+            >
+              <span className="favorites-text">
                 My Favorites
                 {favoriteCount > 0 && (
-                  <span className="badge">{favoriteCount}</span>
+                  <span className="favorites-badge">{favoriteCount}</span>
                 )}
-              </NavLink>
+              </span>
+            </NavLink>
 
               <NavLink
                 to="/about"
