@@ -11,25 +11,38 @@ export const AuthProvider = ({ children }) => {
 
   const logout = () => {
     setIsLoggedIn(false);
+
     const user = localStorage.getItem('userEmail');
     sessionStorage.removeItem('dogFactShown');
+
     if (user) {
       localStorage.removeItem(`favorites_${user}`);
       localStorage.removeItem('userEmail');
     }
+
     fetch('https://frontend-take-home-service.fetch.com/auth/logout', {
       method: 'POST',
-      credentials: 'include'
+      credentials: 'include',
+      headers: {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json',
+      }
+    }).catch(err => {
+      console.error('Logout failed:', err);
     });
   };
 
   useEffect(() => {
-    // Check if cookie is still valid
     const verifyAuth = async () => {
       try {
         const res = await fetch('https://frontend-take-home-service.fetch.com/dogs/breeds', {
-          credentials: 'include'
+          method: 'GET',
+          credentials: 'include',
+          headers: {
+            'Accept': 'application/json'
+          }
         });
+
         if (res.ok) {
           setIsLoggedIn(true);
         }
