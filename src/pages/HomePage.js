@@ -46,29 +46,12 @@ const HomePage = () => {
   };
 
   useEffect(() => {
-    const fetchBreeds = async () => {
-      try {
-        const res = await fetch(`${BASE_URL}/dogs/breeds`, {
-          method: 'GET',
-          credentials: 'include',
-          headers: {
-            'Accept': 'application/json'
-          }
-        });
-
-        if (!res.ok) {
-          throw new Error('Failed to fetch breeds');
-        }
-
-        const data = await res.json();
+    fetch(`${BASE_URL}/dogs/breeds`, { credentials: 'include' })
+      .then((res) => res.json())
+      .then((data) => {
         setBreeds(data);
         setBreedGroups(groupBreedsAlphabetically(data));
-      } catch (error) {
-        console.error('Error fetching breeds:', error);
-      }
-    };
-
-    fetchBreeds();
+      });
   }, []);
 
   useEffect(() => {
@@ -85,49 +68,37 @@ const HomePage = () => {
   }, [location.pathname]);
 
   useEffect(() => {
-    const fetchDogIds = async () => {
-      const query = new URLSearchParams();
+    const query = new URLSearchParams();
 
-      if (selectedBreeds.length > 0) {
-        selectedBreeds.forEach((breed) => query.append('breeds', breed));
-      } else if (selectedGroup && breedGroups[selectedGroup]) {
-        breedGroups[selectedGroup].forEach((breed) => query.append('breeds', breed));
-      }
+    if (selectedBreeds.length > 0) {
+      selectedBreeds.forEach((breed) => query.append('breeds', breed));
+    } else if (selectedGroup && breedGroups[selectedGroup]) {
+      breedGroups[selectedGroup].forEach((breed) => query.append('breeds', breed));
+    }
 
-      if (zipCodesNearMe.length > 0) {
-        zipCodesNearMe.forEach((zip) => query.append('zipCodes', zip));
-      }
+    if (zipCodesNearMe.length > 0) {
+      zipCodesNearMe.forEach(zip => query.append('zipCodes', zip));
+    }
 
-      query.append('size', PAGE_SIZE);
-      query.append('from', from);
-      query.append('sort', `breed:${sortOrder}`);
+    query.append('size', PAGE_SIZE);
+    query.append('from', from);
+    query.append('sort', `breed:${sortOrder}`);
 
-      setIsLoading(true);
+    setIsLoading(true);
 
-      try {
-        const res = await fetch(`${BASE_URL}/dogs/search?${query.toString()}`, {
-          method: 'GET',
-          credentials: 'include',
-          headers: {
-            'Accept': 'application/json'
-          }
-        });
-
-        if (!res.ok) {
-          throw new Error('Failed to fetch dog search results');
-        }
-
-        const data = await res.json();
+    fetch(`${BASE_URL}/dogs/search?${query.toString()}`, {
+      credentials: 'include',
+    })
+      .then((res) => res.json())
+      .then((data) => {
         setDogIds(data.resultIds);
         setTotal(data.total);
-      } catch (err) {
-        console.error('Error fetching dog IDs:', err);
-      } finally {
+        // setIsLoading(false);
+      })
+      .catch((err) => {
+        console.error("Error fetching dog IDs:", err);
         setIsLoading(false);
-      }
-    };
-
-    fetchDogIds();
+      });
   }, [selectedBreeds, selectedGroup, sortOrder, from, breedGroups, zipCodesNearMe]);
 
   // Favorites
@@ -161,320 +132,134 @@ const HomePage = () => {
       }
     }, [favorites]);
 
-  // useEffect(() => {
-  //   if (dogIds.length === 0) {
-  //     setDogDetails([]);
-  //     setIsLoading(false);
-  //     return;
-  //   }
+  useEffect(() => {
+    if (dogIds.length === 0) {
+      setDogDetails([]);
+      setIsLoading(false);
+      return;
+    }
 
-  //   setIsLoading(true);
+    setIsLoading(true);
 
-  //   fetch(`${BASE_URL}/dogs`, {
-  //     method: 'POST',
-  //     credentials: 'include',
-  //     headers: { 'Content-Type': 'application/json' },
-  //     body: JSON.stringify(dogIds),
-  //   })
-  //     .then((res) => res.json())
-  //     .then(async (dogs) => {
-  //       const validDogs = dogs.filter((dog) => dog && typeof dog.zip_code !== 'undefined');
-  //       const zipCodes = [...new Set(validDogs.map((dog) => dog.zip_code).filter(Boolean))];
-
-  //       let locationMap = {};
-  //       if (zipCodes.length > 0) {
-  //         const locationRes = await fetch(`${BASE_URL}/locations`, {
-  //           method: 'POST',
-  //           credentials: 'include',
-  //           headers: { 'Content-Type': 'application/json' },
-  //           body: JSON.stringify(zipCodes),
-  //         });
-
-  //         const locationData = await locationRes.json();
-  //         locationData.forEach(loc => {
-  //           if (loc && loc.zip_code) locationMap[loc.zip_code] = loc;
-  //         });
-  //       }
-
-  //       const enrichedDogs = validDogs.map(dog => ({
-  //         ...dog,
-  //         location: locationMap[dog.zip_code] || null
-  //       }));
-
-  //       setDogDetails(enrichedDogs);
-  //       setIsLoading(false);
-  //     })
-  //     .catch((err) => {
-  //       console.error("Error fetching dogs or locations:", err);
-  //       setDogDetails([]);
-  //       setIsLoading(false);
-  //     });
-  // }, [dogIds]);
-useEffect(() => {
-  if (dogIds.length === 0) {
-    setDogDetails([]);
-    setIsLoading(false);
-    return;
-  }
-
-  setIsLoading(true);
-
-  // Step 1: Fetch dog details
-  fetch(`${BASE_URL}/dogs`, {
-    method: 'POST',
-    credentials: 'include', // Needed for cookie session
-    mode: 'cors',            // ✅ iOS compatibility
-    headers: {
-      'Content-Type': 'application/json'
-    },
-    body: JSON.stringify(dogIds)
-  })
-    .then((res) => {
-      if (!res.ok) throw new Error(`Dog fetch failed: ${res.status}`);
-      return res.json();
+    fetch(`${BASE_URL}/dogs`, {
+      method: 'POST',
+      credentials: 'include',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(dogIds),
     })
-    .then(async (dogs) => {
-      const validDogs = dogs.filter((dog) => dog && typeof dog.zip_code !== 'undefined');
-      const zipCodes = [...new Set(validDogs.map((dog) => dog.zip_code).filter(Boolean))];
+      .then((res) => res.json())
+      .then(async (dogs) => {
+        const validDogs = dogs.filter((dog) => dog && typeof dog.zip_code !== 'undefined');
+        const zipCodes = [...new Set(validDogs.map((dog) => dog.zip_code).filter(Boolean))];
 
-      let locationMap = {};
-
-      // Step 2: Fetch location data for zip codes
-      if (zipCodes.length > 0) {
-        try {
+        let locationMap = {};
+        if (zipCodes.length > 0) {
           const locationRes = await fetch(`${BASE_URL}/locations`, {
             method: 'POST',
-            credentials: 'include', // ✅ Cookie support
-            mode: 'cors',           // ✅ iOS fix
-            headers: {
-              'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(zipCodes)
+            credentials: 'include',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(zipCodes),
           });
-
-          if (!locationRes.ok) throw new Error(`Location fetch failed: ${locationRes.status}`);
 
           const locationData = await locationRes.json();
-          locationData.forEach((loc) => {
-            if (loc && loc.zip_code) {
-              locationMap[loc.zip_code] = loc;
-            }
+          locationData.forEach(loc => {
+            if (loc && loc.zip_code) locationMap[loc.zip_code] = loc;
           });
-        } catch (locationErr) {
-          console.warn('Failed to fetch locations (handled gracefully):', locationErr);
         }
+
+        const enrichedDogs = validDogs.map(dog => ({
+          ...dog,
+          location: locationMap[dog.zip_code] || null
+        }));
+
+        setDogDetails(enrichedDogs);
+        setIsLoading(false);
+      })
+      .catch((err) => {
+        console.error("Error fetching dogs or locations:", err);
+        setDogDetails([]);
+        setIsLoading(false);
+      });
+  }, [dogIds]);
+
+  const handleFindNearMe = () => {
+      // If already active, clicking again should turn it off
+      if (isNearMeActive) {
+        setZipCodesNearMe([]);
+        setIsNearMeActive(false);
+        return;
       }
 
-      // Step 3: Enrich and set dog data
-      const enrichedDogs = validDogs.map((dog) => ({
-        ...dog,
-        location: locationMap[dog.zip_code] || null
-      }));
-
-      setDogDetails(enrichedDogs);
-      setIsLoading(false);
-    })
-    .catch((err) => {
-      console.error('Dog fetch failed:', err);
-      setDogDetails([]); // fallback: empty array
-      setIsLoading(false);
-    });
-}, [dogIds]);
-
-  // const handleFindNearMe = () => {
-  //     // If already active, clicking again should turn it off
-  //     if (isNearMeActive) {
-  //       setZipCodesNearMe([]);
-  //       setIsNearMeActive(false);
-  //       return;
-  //     }
-
-  //     if (!navigator.geolocation) {
-  //       alert('Geolocation is not supported by your browser');
-  //       return;
-  //     }
-  //   navigator.geolocation.getCurrentPosition(async (position) => {
-  //     const { latitude, longitude } = position.coords;
-
-  //     const nearbyZipRes = await fetch(`${BASE_URL}/locations/search`, {
-  //       method: 'POST',
-  //       credentials: 'include',
-  //       headers: { 'Content-Type': 'application/json' },
-  //       body: JSON.stringify({
-  //         geoBoundingBox: {
-  //           bottom_left: { lat: latitude - 0.3, lon: longitude - 0.3 },
-  //           top_right: { lat: latitude + 0.3, lon: longitude + 0.3 },
-  //         },
-  //         size: 100,
-  //       }),
-  //     });
-
-  //     const zipData = await nearbyZipRes.json();
-  //     const zipCodes = zipData.results.map(loc => loc.zip_code);
-
-  //     if (zipCodes.length === 0) {
-  //       alert('No dogs found near your location. Try expanding your search.');
-  //       return;
-  //     }
-
-  //     setZipCodesNearMe(zipCodes);
-  //     setIsNearMeActive(true);
-  //     setFrom(0);
-  //   }, () => {
-  //     alert('Unable to retrieve your location. Please allow location access.');
-  //   });
-  // };
-    const handleFindNearMe = () => {
-  if (isNearMeActive) {
-    setZipCodesNearMe([]);
-    setIsNearMeActive(false);
-    return;
-  }
-
-  if (!navigator.geolocation) {
-    alert('Geolocation is not supported by your browser');
-    return;
-  }
-
-  navigator.geolocation.getCurrentPosition(
-    async (position) => {
+      if (!navigator.geolocation) {
+        alert('Geolocation is not supported by your browser');
+        return;
+      }
+    navigator.geolocation.getCurrentPosition(async (position) => {
       const { latitude, longitude } = position.coords;
 
-      try {
-        const nearbyZipRes = await fetch(`${BASE_URL}/locations/search`, {
-          method: 'POST',
-          credentials: 'include',
-          mode: 'cors',
-          headers: {
-            'Content-Type': 'application/json'
+      const nearbyZipRes = await fetch(`${BASE_URL}/locations/search`, {
+        method: 'POST',
+        credentials: 'include',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          geoBoundingBox: {
+            bottom_left: { lat: latitude - 0.3, lon: longitude - 0.3 },
+            top_right: { lat: latitude + 0.3, lon: longitude + 0.3 },
           },
-          body: JSON.stringify({
-            geoBoundingBox: {
-              bottom_left: { lat: latitude - 0.3, lon: longitude - 0.3 },
-              top_right: { lat: latitude + 0.3, lon: longitude + 0.3 }
-            },
-            size: 100
-          })
-        });
+          size: 100,
+        }),
+      });
 
-        if (!nearbyZipRes.ok) throw new Error(`Nearby ZIP fetch failed: ${nearbyZipRes.status}`);
+      const zipData = await nearbyZipRes.json();
+      const zipCodes = zipData.results.map(loc => loc.zip_code);
 
-        const zipData = await nearbyZipRes.json();
-        const zipCodes = zipData.results.map((loc) => loc.zip_code);
-
-        if (zipCodes.length === 0) {
-          alert('No dogs found near your location. Try expanding your search.');
-          return;
-        }
-
-        setZipCodesNearMe(zipCodes);
-        setIsNearMeActive(true);
-        setFrom(0);
-      } catch (error) {
-        console.error('Error retrieving nearby ZIP codes:', error);
-        alert('Something went wrong while finding nearby dogs.');
+      if (zipCodes.length === 0) {
+        alert('No dogs found near your location. Try expanding your search.');
+        return;
       }
-    },
-    () => {
+
+      setZipCodesNearMe(zipCodes);
+      setIsNearMeActive(true);
+      setFrom(0);
+    }, () => {
       alert('Unable to retrieve your location. Please allow location access.');
-    }
-  );
-};
+    });
+  };
 
-  // const handleMatch = async () => {
-  //   const res = await fetch(`${BASE_URL}/dogs/match`, {
-  //     method: 'POST',
-  //     credentials: 'include',
-  //     headers: { 'Content-Type': 'application/json' },
-  //     body: JSON.stringify(favorites),
-  //   });
-
-  //   const data = await res.json();
-
-  //   const matchedRes = await fetch(`${BASE_URL}/dogs`, {
-  //     method: 'POST',
-  //     credentials: 'include',
-  //     headers: { 'Content-Type': 'application/json' },
-  //     body: JSON.stringify([data.match]),
-  //   });
-
-  //   const matchedData = await matchedRes.json();
-  //   const matchedDogObj = matchedData[0] || { id: data.match, name: 'Unknown', breed: 'Unknown' };
-
-  //   if (matchedDogObj && matchedDogObj.zip_code) {
-  //     const locationRes = await fetch(`${BASE_URL}/locations`, {
-  //       method: 'POST',
-  //       credentials: 'include',
-  //       headers: { 'Content-Type': 'application/json' },
-  //       body: JSON.stringify([matchedDogObj.zip_code]),
-  //     });
-
-  //     const [location] = await locationRes.json();
-  //     matchedDogObj.location = location || null;
-  //   }
-
-  //   setMatchedDog(matchedDogObj);
-  // };
   const handleMatch = async () => {
-  try {
-    // Step 1: Get the matched dog ID
     const res = await fetch(`${BASE_URL}/dogs/match`, {
       method: 'POST',
       credentials: 'include',
-      mode: 'cors', // iOS Safari compatibility
-      headers: {
-        'Content-Type': 'application/json',
-      },
+      headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(favorites),
     });
 
-    if (!res.ok) throw new Error(`Match request failed: ${res.status}`);
     const data = await res.json();
 
-    // Step 2: Fetch full details of matched dog
     const matchedRes = await fetch(`${BASE_URL}/dogs`, {
       method: 'POST',
       credentials: 'include',
-      mode: 'cors',
-      headers: {
-        'Content-Type': 'application/json',
-      },
+      headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify([data.match]),
     });
 
-    if (!matchedRes.ok) throw new Error(`Dog details fetch failed: ${matchedRes.status}`);
     const matchedData = await matchedRes.json();
+    const matchedDogObj = matchedData[0] || { id: data.match, name: 'Unknown', breed: 'Unknown' };
 
-    const matchedDogObj = matchedData[0] || {
-      id: data.match,
-      name: 'Unknown',
-      breed: 'Unknown',
-    };
-
-    // Step 3: Enrich with location (if zip_code is available)
     if (matchedDogObj && matchedDogObj.zip_code) {
       const locationRes = await fetch(`${BASE_URL}/locations`, {
         method: 'POST',
         credentials: 'include',
-        mode: 'cors',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify([matchedDogObj.zip_code]),
       });
 
-      if (locationRes.ok) {
-        const [location] = await locationRes.json();
-        matchedDogObj.location = location || null;
-      }
+      const [location] = await locationRes.json();
+      matchedDogObj.location = location || null;
     }
 
     setMatchedDog(matchedDogObj);
-  } catch (error) {
-    console.error('Match generation failed:', error);
-    alert('Unable to generate a match. Please try again later.');
-  }
-};
+  };
 
   const toggleFavorite = (id) => {
   setFavorites((prev) =>
