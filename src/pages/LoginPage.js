@@ -36,6 +36,9 @@ const LoginPage = () => {
       <Header />
       <div className="login-container">
         <h2 className="login-title">Login to FetchMate🐾</h2>
+        <p className="login-note">
+          This is a prototype app. You can log in with any valid name and email to explore.
+        </p>
         <form className="login-form" onSubmit={handleLogin}>
           <input
             type="text"
